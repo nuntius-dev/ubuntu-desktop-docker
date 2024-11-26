@@ -6,9 +6,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Bogota
 ENV LANG es_ES.UTF-8
 ENV USER=root
+ENV TZ=America/Bogota
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=dummy
 
-EXPOSE 22 5901 8080 3389
+EXPOSE 22 5901 8080 3389 5901
 
 # Actualización e instalación de dependencias
 RUN apt-get update && \
