@@ -35,7 +35,7 @@ RUN mkdir -p /.novnc/utils/websockify && \
     wget -qO- https://github.com/novnc/noVNC/archive/v1.5.0.tar.gz | tar xz --strip 1 -C /.novnc && \
     wget -qO- https://github.com/novnc/websockify/archive/v0.12.0.tar.gz | tar xz --strip 1 -C /.novnc/utils/websockify && \
     ln -s /.novnc/vnc.html /.novnc/index.html
-
+CMD ["sh", "/entrypoint.sh"]
 # Configuración del sistema
 RUN systemctl enable ssh.service
 
