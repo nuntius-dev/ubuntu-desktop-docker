@@ -2,7 +2,7 @@
 
 Este proyecto permite ejecutar un entorno gráfico Ubuntu XFCE en un contenedor Docker, con acceso a través de VNC y noVNC. Es ideal para aplicaciones que requieren un escritorio remoto accesible desde cualquier navegador web.
 
-![Captura de pantalla del escritorio](desktop.png)
+![Captura de pantalla del escritorio](desktopquemu.png)
 
 ## Características
 
@@ -29,8 +29,8 @@ Este proyecto permite ejecutar un entorno gráfico Ubuntu XFCE en un contenedor 
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/nuntius-dev/Ubuntu-Desktop-Docker.git
-cd Ubuntu-Desktop-Docker
+git clone https://github.com/nuntius-dev/ubuntu-desktop-docker-XFCE-noVNC.git
+cd ubuntu-desktop-docker-XFCE-noVNC
 ```
 
 ### 2. Construir la imagen Docker
@@ -126,6 +126,7 @@ Verifica los puertos mapeados y asegúrate de que no están en uso por otro serv
 ## Créditos
 
 Este contenedor fue creado para facilitar el uso de escritorios Linux remotos en entornos virtualizados. Contribuciones y mejoras son bienvenidas.
+visita tutoriales en https://bit.ly/3Ou1SQ9
 
 ---
 
