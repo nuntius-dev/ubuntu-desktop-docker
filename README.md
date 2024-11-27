@@ -2,7 +2,7 @@
 
 Este proyecto permite ejecutar un entorno gráfico Ubuntu XFCE en un contenedor Docker, con acceso a través de VNC y noVNC. Es ideal para aplicaciones que requieren un escritorio remoto accesible desde cualquier navegador web.
 
-![Captura de pantalla del escritorio](desk.png)
+![Captura de pantalla del escritorio](desk-novcn.png)
 
 ## Características
 
