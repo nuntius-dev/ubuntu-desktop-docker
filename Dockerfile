@@ -1,5 +1,5 @@
-# Usar una imagen base oficial de Ubuntu
-FROM ubuntu:22.04
+# Usar una imagen base oficial de Debian
+FROM debian:12.8-slim
 
 # Establecer variables de entorno necesarias
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -13,52 +13,41 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # Actualizar e instalar dependencias necesarias
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y \
-    xfce4 xfce4-goodies \
-    tigervnc-standalone-server tigervnc-common \
+    locales \
+    kde-plasma-desktop \
+    tigervnc-standalone-server \
     novnc websockify \
     xfonts-base x11-xserver-utils \
-    wget curl nano locales sudo && \
+    wget curl nano sudo && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-# comienza el bloque de instrucciones run
-
-# Crear el usuario 'nuntius' y agregarlo al grupo sudo
-RUN useradd -m -s /bin/bash nuntius && \
-    echo "nuntius ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-# Cambiar temporalmente al usuario 'nuntius' para ejecutar el script
-USER nuntius
-
-RUN /bin/bash -c ' \
-    arquitecturas=$(dpkg --print-architecture) && \
-    echo "arquitectura detectada: $arquitecturas" && \
-    if [[ "$arquitecturas" == "arm" || "$arquitecturas" == "aarch64" || "$arquitecturas" == "arm64" ]]; then \
-        echo "arquitectura arm detectada. instalando pi-apps..." && \
-        wget -qO- https://raw.githubusercontent.com/botspot/pi-apps/master/install | bash; \
-    else \
-        echo "arquitectura no arm detectada. saltando instalación de pi-apps."; \
-    fi'
-
-# Cambiar de nuevo al usuario 'root' (opcional)
-USER root
 
 # Configurar locales
 RUN locale-gen en_US.UTF-8 && \
     update-locale LANG=en_US.UTF-8
 
-# Crear usuario para ejecutar el entorno gráfico
+# Crear usuario para el entorno gráfico y otorgar permisos sudo
 RUN useradd -m -s /bin/bash docker && \
     echo "docker:docker" | chpasswd && \
     usermod -aG sudo docker
 
+# Verificar y opcionalmente instalar pi-apps si la arquitectura es ARM
+RUN /bin/bash -c ' \
+    if dpkg --print-architecture | grep -qE "arm|aarch64|arm64"; then \
+        echo "Instalando pi-apps para arquitectura ARM..."; \
+        wget -qO- https://raw.githubusercontent.com/botspot/pi-apps/master/install | bash; \
+    else \
+        echo "Arquitectura no ARM detectada. Saltando instalación de pi-apps."; \
+    fi'
+
 # Crear directorios persistentes para VNC y Desktop
-VOLUME /root/.vnc
-VOLUME /root/Desktop
+VOLUME /docker/.vnc
+VOLUME /docker/Desktop
 
 # Configurar TigerVNC
-RUN mkdir -p /root/.vnc && \
-    echo "docker" | vncpasswd -f > /root/.vnc/passwd && \
-    chmod 600 /root/.vnc/passwd
+RUN mkdir -p /docker/.vnc && \
+    echo "docker" | vncpasswd -f > /docker/.vnc/passwd && \
+    chmod 600 /docker/.vnc/passwd
 
 # Crear el script de inicio
 RUN echo '#!/bin/bash\n\
@@ -69,15 +58,15 @@ vncserver -kill $DISPLAY || true\n\
 vncserver $DISPLAY -geometry 1280x720 -depth 24\n\
 \n\
 # Iniciar noVNC\n\
-websockify --web=/usr/share/novnc/ --cert=/root/.vnc/self.pem $NOVNC_PORT localhost:$VNC_PORT &\n\
+websockify --web=/usr/share/novnc/ --cert=/docker/.vnc/self.pem $NOVNC_PORT localhost:$VNC_PORT &\n\
 echo "noVNC iniciado en http://localhost:$NOVNC_PORT/vnc.html"\n\
 \n\
 # Mantener el contenedor activo\n\
-tail -f /dev/null' > /root/start.sh && \
-    chmod +x /root/start.sh
+tail -f /dev/null' > /docker/start.sh && \
+    chmod +x /docker/start.sh
 
-# Puertos expuestos para VNC y noVNC
+# Exponer puertos para VNC y noVNC
 EXPOSE 5901 8080
 
 # Comando para iniciar el contenedor
-CMD ["/bin/bash", "/root/start.sh"]
+CMD ["/bin/bash", "/docker/start.sh"]
