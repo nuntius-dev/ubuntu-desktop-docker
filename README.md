@@ -14,7 +14,8 @@ Este proyecto permite ejecutar un entorno gráfico Ubuntu XFCE en un contenedor 
 - Usuarios predeterminados configurados para fácil acceso.
 - Persistencia de datos para configuraciones y escritorio.
 
----
+## Porfavor usa dokcerfile ❗
+
 
 ## Requisitos
 
